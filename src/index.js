@@ -13,13 +13,13 @@ import { rm } from "./commands/rm.js";
 import { rn } from "./commands/rn.js";
 import { hash } from "./commands/hash.js";
 // import { compressFile } from "./commands/compress.js";
-// import {
-//   displayArchitecture,
-//   displayCPUS,
-//   displayEOL,
-//   displayHomeDir,
-//   displayUserName,
-// } from "./commands/os.js";
+import {
+  displayArchitecture,
+  displayCPUS,
+  displayEOL,
+  displayHomeDir,
+  displayUserName,
+} from "./commands/os.js";
 
 export const sucsessMessage = "Operation completed successfully!";
 export const errorMessage = "Error, operation failed!";
