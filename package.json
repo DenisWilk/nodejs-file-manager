@@ -5,13 +5,15 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
+    "start": "node ./src/index.js",
+    "start:n": "node ./src/index.js --username=Denis",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/DenisWilk/nodejs-file-manager.git"
   },
-  "author": "",
+  "author": "Denis",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/DenisWilk/nodejs-file-manager/issues"
