@@ -6,7 +6,7 @@ import { homedir } from "os";
 import { add } from "./commands/add.js";
 import { cat } from "./commands/cat.js";
 import { cd } from "./commands/cd.js";
-// import { cp } from "./commands/cp.js";
+import { cp } from "./commands/cp.js";
 // import { hash } from "./commands/hash.js";
 import { ls } from "./commands/ls.js";
 // import { mv } from "./commands/mv.js";
