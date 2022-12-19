@@ -1,10 +1,6 @@
 import { chdir } from "process";
 import { resolve } from "path";
-import {
-  errorMessage,
-  directoryMessage,
-  noPathMessage
-} from "../index.js";
+import { errorMessage, directoryMessage, noPathMessage } from "../index.js";
 
 export const up = (path) => {
   try {
@@ -18,7 +14,7 @@ export const up = (path) => {
   }
 };
 
-export const cd = (path) => {
+export function cd(path) {
   try {
     if (path) {
       chdir(resolve(path));
@@ -29,4 +25,4 @@ export const cd = (path) => {
   } catch {
     console.log(errorMessage);
   }
-};
+}

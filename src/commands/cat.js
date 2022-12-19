@@ -1,8 +1,8 @@
-import  {promises as fs, createReadStream } from "fs";
+import { promises as fs, createReadStream } from "fs";
 import path from "path";
 import { currentDir, errorMessage } from "../index.js";
 
-export const cat = async (command) => {
+export async function cat(command) {
   const enteredPath = command.split(" ")[1];
   try {
     let filePath = "";
@@ -24,4 +24,4 @@ export const cat = async (command) => {
   } catch (error) {
     console.log(errorMessage);
   }
-};
+}
