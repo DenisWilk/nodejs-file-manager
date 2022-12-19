@@ -1,4 +1,4 @@
-import fs, { createReadStream } from "fs/promises";
+import  {promises as fs, createReadStream } from "fs";
 import path from "path";
 import { currentDir, errorMessage } from "../index.js";
 
