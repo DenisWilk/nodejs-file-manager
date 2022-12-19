@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import { currentDir, errorMessage } from "../index.js";
 
-export async function cp(command) {
+export async function mv(command) {
   if (command.split(" ").length < 3) {
     console.log(errorMessage);
   }
@@ -20,7 +20,10 @@ export async function cp(command) {
       ? path.join(currentDir, enteredNewPath)
       : enteredNewPath;
 
-  const fullPath = path.join(folderPath, filePath.split(path.sep).slice(-1)[0]);
+  const fullPath = path.join(
+    folderPath,
+    filePath.split(path.sep).slice(-1)[0]
+  );
 
   try {
     await fs.promises.access(filePath);
@@ -32,13 +35,24 @@ export async function cp(command) {
       if (error.message === "exist") {
         throw new Error(errorMessage);
       }
-
       await fs.promises.access(filePath);
-      fs.createReadStream(filePath)
-        .pipe(fs.createWriteStream(fullPath))
-        .on("error", () => {
-          console.log(errorMessage);
-        });
+
+      const readStream = fs.createReadStream(filePath);
+      const writeStream = fs.createWriteStream(fullPath);
+
+      readStream.on("close", () => {
+        fs.promises.unlink(filePath);
+      });
+
+      readStream.on("error", () => {
+        console.log(errorMessage);
+      });
+
+      writeStream.on("error", () => {
+        console.log(errorMessage);
+      });
+
+      readStream.pipe(writeStream);
     } catch (error) {
       console.log(errorMessage);
     }

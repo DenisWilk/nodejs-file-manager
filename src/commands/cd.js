@@ -2,7 +2,7 @@ import { chdir } from "process";
 import { resolve } from "path";
 import { errorMessage, directoryMessage, noPathMessage } from "../index.js";
 
-export const up = (path) => {
+export function up(path) {
   try {
     if (path) {
       console.log(noPathMessage);
@@ -12,7 +12,7 @@ export const up = (path) => {
   } catch {
     console.log(errorMessage);
   }
-};
+}
 
 export function cd(path) {
   try {
