@@ -11,7 +11,7 @@ import { cd } from "./commands/cd.js";
 import { ls } from "./commands/ls.js";
 // import { mv } from "./commands/mv.js";
 // import { rm } from "./commands/rm.js";
-// import { rn } from "./commands/rn.js";
+import { rn } from "./commands/rn.js";
 // import { compressFile } from "./commands/compress.js";
 // import {
 //   displayArchitecture,
