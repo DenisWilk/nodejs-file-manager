@@ -1,6 +1,11 @@
 import { dirname, resolve } from "path";
 import { rename as createNewName } from "fs/promises";
-import { errorMessage, invalidInputMessage, getCurrentDir } from "../index.js";
+import {
+  errorMessage,
+  sucsessMessage,
+  invalidInputMessage,
+  getCurrentDir,
+} from "../index.js";
 
 export async function rn(path, newPath) {
   if (path && newPath) {
@@ -23,9 +28,9 @@ export async function rn(path, newPath) {
     try {
       await createNewName(oldFile, newFile);
       console.log(sucsessMessage);
+      cp;
       getCurrentDir();
     } catch (error) {
-      console.log(errorMessage);
     }
   } else {
     console.log(invalidInputMessage);

@@ -2,7 +2,7 @@ import { resolve, parse } from "path";
 import { createReadStream, createWriteStream } from "fs";
 import { pipeline } from "stream/promises";
 import {
-  errorMessage,
+  sucsessMessage,
   invalidInputMessage,
   getCurrentDir,
 } from "../index.js";
@@ -20,7 +20,6 @@ export async function cp(path, newPath) {
       console.log(sucsessMessage);
       getCurrentDir();
     } catch (error) {
-      console.log(errorMessage);
     }
   } else {
     console.log(invalidInputMessage);
