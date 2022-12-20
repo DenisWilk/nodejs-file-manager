@@ -1,20 +1,15 @@
 import fs from "fs";
-import path from "path";
 import { createBrotliDecompress } from "zlib";
 import {
   errorMessage,
   sucsessMessage,
-  invalidInputMessage,
   currentDir,
-  getCurrentDir,
 } from "../index.js";
 
 export async function decompress(path, newPath) {
   if (command.split(" ").length < 3) {
     return console.log(errorMessage);
   }
-  const path = command.split(" ")[1];
-  const newPath = command.split(" ")[2];
 
   const archivePath =
     path.split(path.sep).length === 1
