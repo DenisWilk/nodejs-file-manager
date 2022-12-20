@@ -1,18 +1,17 @@
-import fs from "fs/promises";
-import path, { resolve, join } from "path";
-import { createInterface } from "readline";
-import { stdin as input, stdout as output } from "process";
+import { chdir } from "process";
 import { homedir } from "os";
+import { Writable } from "stream";
 import { add } from "./commands/add.js";
 import { cat } from "./commands/cat.js";
-import { cd } from "./commands/cd.js";
+import { cd, up } from "./commands/cd.js";
 import { cp } from "./commands/cp.js";
 import { ls } from "./commands/ls.js";
 import { mv } from "./commands/mv.js";
 import { rm } from "./commands/rm.js";
 import { rn } from "./commands/rn.js";
 import { hash } from "./commands/hash.js";
-import { compressFile } from "./commands/compress.js";
+import { compress } from "./commands/compress.js";
+import { decompress } from "./commands/decompress.js";
 import {
   displayArchitecture,
   displayCPUS,
@@ -23,106 +22,120 @@ import {
 
 export const sucsessMessage = "Operation completed successfully!";
 export const errorMessage = "Error, operation failed!";
-export const noPathMessage = "Check if the entered path is correct.";
-export let currentDir = process.cwd();
-export const directoryMessage = `Currently directory: ${currentDir}\n`;
+export const invalidInputMessage = "Check if the input is correct.";
+export const currentDir = process.cwd();
 
-const readline = createInterface({ input, output });
 const userName = process.argv.slice(2)[0].split("=")[1];
 
-function sayHi() {
-  console.log(`\x1b[35mWelcome to the File Manager, ${userName}!\n\x1b[0m
-   You are currently in ${homedir()}\n`);
-}
-sayHi();
+const runEnteredCommand = async (data) => {
+  const [command, path, newPath] = data.toString().trim().split(" ");
 
-async function runEnteredCommand(command) {
-  switch (command.split(" ")[0]) {
+  switch (command) {
     case "up":
-      if (currentDir === homedir()) {
-        break;
-      }
-      currentDir = join(currentDir, "..");
+      up(path);
       break;
 
     case "cd":
-      const newDir = command.split(" ").slice(1).join(" ").replace(/["']/g, "");
-      cd(newDir);
+      cd(path);
       break;
 
     case "ls":
-      ls();
+      await ls();
       break;
 
     case "cat":
-      cat(command);
+      await cat(path);
       break;
 
     case "add":
-      add(command);
+      await add(path);
       break;
 
     case "rn":
-      rn(command);
+      await rn(path, newPath);
       break;
 
     case "cp":
-      cp(command);
+      await cp(path, newPath);
       break;
 
     case "mv":
-      mv(command);
+      await mv(path, newPath);
       break;
 
     case "rm":
-      rm(command);
+      await rm(path);
       break;
 
     case "os":
-      if (command.split(/\s+/)[1] === "--EOL") {
+      if (path === "--EOL") {
         displayEOL();
       }
-      if (command.split(/\s+/)[1] === "--cpus") {
+      if (path === "--cpus") {
         displayCPUS();
       }
-      if (command.split(/\s+/)[1] === "--homedir") {
+      if (path === "--homedir") {
         displayHomeDir();
       }
-      if (command.split(/\s+/)[1] === "--username") {
+      if (path === "--username") {
         displayUserName();
       }
-      if (command.split(/\s+/)[1] === "--architecture") {
+      if (path === "--architecture") {
         displayArchitecture();
       }
       break;
 
     case "hash":
-      hash(command);
+      await hash(path);
       break;
 
     case "compress":
-      await compressFile(currentPath, argument, argument2);
+      await compress(path, newPath);
+      break;
+
+    case "decompress":
+      await decompress(path, newPath);
       break;
 
     case ".exit":
+      path ? console.log(invalidInputMessage) : sayBye();
       break;
 
     default:
-      console.log(
-        "\nIncorrect command! Enter 'help' for display a list of commands.\n"
-      );
+      console.log(invalidInputMessage);
+      break;
   }
+};
+
+export function getCurrentDir() {
+  console.log(`Current directory ${process.cwd()}`);
 }
 
-readline
-  .on("line", (command) => {
-    runEnteredCommand(command);
-    if (command.split(/\s+/)[0] !== "cd") {
-      console.log(directoryMessage, "\n");
-    }
-    if (command === ".exit") readline.close();
-  })
-  .on("close", () => {
-    console.log(`Thank you for using File Manager, ${userName}!\nGoodbye!`);
-    process.exit(0);
+export function output() {
+  return new Writable({
+    decodeStrings: false,
+    write(chunk, encoding, callback) {
+      console.log(chunk);
+      callback();
+    },
   });
+}
+
+function sayHi() {
+  console.log(`\x1b[35mWelcome to the File Manager, ${userName}!\n\x1b[0m`);
+}
+
+function sayBye() {
+  console.log(`Thank you for using File Manager, ${userName}!\nGoodbye!`);
+  process.exit();
+}
+
+chdir(homedir());
+sayHi();
+getCurrentDir();
+
+process.stdin.on("data", runEnteredCommand);
+
+process.on("SIGINT", () => {
+  sayBye();
+});

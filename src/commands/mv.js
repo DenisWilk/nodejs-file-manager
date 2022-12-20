@@ -1,60 +1,32 @@
-import fs from "fs";
-import path from "path";
-import { currentDir, errorMessage } from "../index.js";
+import { resolve, parse } from "path";
+import { createReadStream, createWriteStream } from "fs";
+import { pipeline } from "stream/promises";
+import { rm } from "fs/promises";
+import {
+  errorMessage,
+  sucsessMessage,
+  invalidInputMessage,
+  currentDir,
+  getCurrentDir,
+} from "../index.js";
 
-export async function mv(command) {
-  if (command.split(" ").length < 3) {
-    console.log(errorMessage);
-  }
-
-  const enteredPath = command.split(" ")[1];
-  const enteredNewPath = command.split(" ")[2];
-
-  const filePath =
-    enteredPath.split(path.sep).length === 1
-      ? path.join(currentDir, enteredPath)
-      : path.join(enteredPath);
-
-  const folderPath =
-    enteredNewPath.split(path.sep).length === 1
-      ? path.join(currentDir, enteredNewPath)
-      : enteredNewPath;
-
-  const fullPath = path.join(
-    folderPath,
-    filePath.split(path.sep).slice(-1)[0]
-  );
-
-  try {
-    await fs.promises.access(filePath);
-    await fs.promises.access(fullPath);
-
-    throw new Error("exist");
-  } catch (error) {
+export async function mv(path, newPath) {
+  if (path && newPath) {
+    const filePath = resolve(path);
+    const { base } = parse(filePath);
+    const targetFilePath = resolve(newPath, base);
     try {
-      if (error.message === "exist") {
-        throw new Error(errorMessage);
-      }
-      await fs.promises.access(filePath);
+      const readStream = createReadStream(filePath);
+      const writeStream = createWriteStream(targetFilePath);
 
-      const readStream = fs.createReadStream(filePath);
-      const writeStream = fs.createWriteStream(fullPath);
-
-      readStream.on("close", () => {
-        fs.promises.unlink(filePath);
-      });
-
-      readStream.on("error", () => {
-        console.log(errorMessage);
-      });
-
-      writeStream.on("error", () => {
-        console.log(errorMessage);
-      });
-
-      readStream.pipe(writeStream);
+      await pipeline(readStream, writeStream);
+      await rm(filePath);
+      console.log(sucsessMessage);
+      getCurrentDir();
     } catch (error) {
       console.log(errorMessage);
     }
+  } else {
+    console.log(invalidInputMessage);
   }
 }

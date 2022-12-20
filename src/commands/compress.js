@@ -1,24 +1,26 @@
 import fs from "fs";
 import path from "path";
 import { createBrotliCompress } from "zlib";
-import { currentDir, errorMessage, sucsessMessage } from "../index.js";
+import {
+  errorMessage,
+  sucsessMessage,
+  currentDir,
+} from "../index.js";
 
-export function compress(command) {
+export async function compress(path, newPath) {
   if (command.split(" ").length < 3) {
     return console.log(errorMessage);
   }
-  const enteredPath = command.split(" ")[1];
-  const enteredTargetPath = command.split(" ")[2];
 
   const filePath =
-    enteredPath.split(path.sep).length === 1
-      ? path.join(currentDir, enteredPath)
-      : path.join(enteredPath);
+    path.split(path.sep).length === 1
+      ? path.join(currentDir, path)
+      : path.join(path);
 
   const archivePath =
-    enteredTargetPath.split(path.sep).length === 1
-      ? path.join(currentDir, enteredTargetPath)
-      : enteredTargetPath;
+    newPath.split(path.sep).length === 1
+      ? path.join(currentDir, newPath)
+      : newPath;
 
   try {
     const brotli = createBrotliCompress();

@@ -1,24 +1,30 @@
 import fs from "fs";
 import path from "path";
 import { createBrotliDecompress } from "zlib";
-import { currentDir, errorMessage, sucsessMessage } from "../index.js";
+import {
+  errorMessage,
+  sucsessMessage,
+  invalidInputMessage,
+  currentDir,
+  getCurrentDir,
+} from "../index.js";
 
-export function decompress(command) {
+export async function decompress(path, newPath) {
   if (command.split(" ").length < 3) {
     return console.log(errorMessage);
   }
-  const enteredPath = command.split(" ")[1];
-  const enteredTargetPath = command.split(" ")[2];
+  const path = command.split(" ")[1];
+  const newPath = command.split(" ")[2];
 
   const archivePath =
-    enteredPath.split(path.sep).length === 1
-      ? path.join(currentDir, enteredPath)
-      : path.join(enteredPath);
+    path.split(path.sep).length === 1
+      ? path.join(currentDir, path)
+      : path.join(path);
 
   const newFilePath =
-    enteredTargetPath.split(path.sep).length === 1
-      ? path.join(currentDir, enteredTargetPath)
-      : enteredTargetPath;
+    newPath.split(path.sep).length === 1
+      ? path.join(currentDir, newPath)
+      : newPath;
 
   try {
     const brotli = createBrotliDecompress();

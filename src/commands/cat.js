@@ -1,26 +1,22 @@
 import { promises as fs, createReadStream } from "fs";
-import path from "path";
-import { currentDir, errorMessage } from "../index.js";
+import { pipeline } from "stream/promises";
+import { resolve } from "path";
+import {
+  errorMessage,
+  invalidInputMessage,
+  getCurrentDir,
+  output,
+} from "../index.js";
 
-export async function cat(command) {
-  const enteredPath = command.split(" ")[1];
+export async function cat(path) {
   try {
-    let filePath = "";
-    if (enteredPath.split(path.sep).length === 1) {
-      await fs.access(path.join(currentDir, enteredPath));
-      filePath = path.join(currentDir, enteredPath);
+    if (path) {
+      const readStream = createReadStream(resolve(path), { encoding: "utf8" });
+      await pipeline(readStream, output());
+      getCurrentDir();
     } else {
-      await fs.access(enteredPath);
-      filePath = path.join(enteredPath);
+      console.log(invalidInputMessage);
     }
-    const stat = await fs.lstat(filePath);
-    if (stat.isDirectory()) {
-      throw new Error();
-    }
-    const readStream = createReadStream(filePath, "utf-8");
-    readStream.on("data", function (chunk) {
-      console.log(chunk);
-    });
   } catch (error) {
     console.log(errorMessage);
   }

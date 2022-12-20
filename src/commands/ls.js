@@ -1,7 +1,15 @@
 import fs from "fs/promises";
-import { currentDir } from "../index.js";
+import {
+  errorMessage,
+  sucsessMessage,
+  invalidInputMessage,
+  // currentDir,
+  getCurrentDir,
+} from "../index.js";
 
 export async function ls() {
+  const currentDir = process.cwd();
+
   try {
     let folders = [];
     let files = [];

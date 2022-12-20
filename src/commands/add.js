@@ -1,23 +1,25 @@
-import fs from "fs/promises";
-import path from "path";
-import { currentDir, errorMessage, sucsessMessage } from "../index.js";
+import { open } from "fs/promises";
+import { resolve } from "path";
+import {
+  errorMessage,
+  invalidInputMessage,
+  sucsessMessage,
+  getCurrentDir,
+} from "../index.js";
 
-export async function add(command) {
-  const fileName = command.split(" ")[1];
-  const filePath = path.join(currentDir, fileName);
-
+export async function add(path) {
+  let file;
   try {
-    await fs.access(filePath);
-    throw new Error(errorMessage);
-  } catch (error) {
-    try {
-      if (error.message === errorMessage) {
-        throw new Error(errorMessage);
-      }
-      await fs.writeFile(filePath, "");
+    if (path) {
+      file = await open(resolve(process.cwd(), path), "w");
       console.log(sucsessMessage);
-    } catch (error) {
-      console.log(errorMessage);
+      getCurrentDir();
+    } else {
+      console.log(invalidInputMessage);
     }
+  } catch (error) {
+    console.log(errorMessage);
+  } finally {
+    file?.close();
   }
 }

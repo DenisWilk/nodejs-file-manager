@@ -1,13 +1,14 @@
 import { chdir } from "process";
 import { resolve } from "path";
-import { errorMessage, directoryMessage, noPathMessage } from "../index.js";
+import { errorMessage, invalidInputMessage, getCurrentDir } from "../index.js";
 
 export function up(path) {
   try {
     if (path) {
-      console.log(noPathMessage);
+      console.log(invalidInputMessage);
     } else {
       chdir("..");
+      getCurrentDir();
     }
   } catch {
     console.log(errorMessage);
@@ -18,9 +19,9 @@ export function cd(path) {
   try {
     if (path) {
       chdir(resolve(path));
-      console.log(directoryMessage);
+      console.log(getCurrentDir());
     } else {
-      console.log(noPathMessage);
+      console.log(invalidInputMessage);
     }
   } catch {
     console.log(errorMessage);

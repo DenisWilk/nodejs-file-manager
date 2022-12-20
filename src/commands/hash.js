@@ -1,28 +1,27 @@
-import { promises as fs } from "fs";
-import path from "path";
+import { readFile } from "fs/promises";
+import { resolve } from "path";
 import { createHash } from "crypto";
-import { currentDir, errorMessage } from "../index.js";
+import {
+  errorMessage,
+  sucsessMessage,
+  invalidInputMessage,
+  getCurrentDir,
+} from "../index.js";
 
-export async function hash(command) {
-  const enteredPath = command.split(" ")[1];
+export async function hash(path) {
+  if (path) {
+    try {
+      const text = await readFile(resolve(path));
+      const hash = createHash("sha256").update(text).digest("hex");
 
-  try {
-    let filePath = "";
+      console.log(hash);
+      console.log(sucsessMessage);
 
-    if (enteredPath.split(path.sep).length === 1) {
-      await fs.access(path.join(currentDir, enteredPath));
-
-      filePath = path.join(currentDir, enteredPath);
-    } else {
-      await fs.access(enteredPath);
-
-      filePath = path.join(enteredPath);
+      getCurrentDir();
+    } catch (error) {
+      console.log(errorMessage);
     }
-    const content = await fs.readFile(filePath);
-    const hash = createHash("sha256").update(content).digest("hex");
-
-    console.log(hash);
-  } catch (error) {
-    console.log(errorMessage);
+  } else {
+    console.log(invalidInputMessage);
   }
 }

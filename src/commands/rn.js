@@ -1,31 +1,33 @@
-import { promises as fs } from "fs";
-import path from "path";
-import { currentDir, errorMessage } from "../index.js";
+import { dirname, resolve } from "path";
+import { rename as createNewName } from "fs/promises";
+import { errorMessage, invalidInputMessage, getCurrentDir } from "../index.js";
 
-export async function rn(command) {
-  let filePath = "";
-  const enteredPath = command.split(" ")[1];
-  const newName = command.split(" ")[2];
-
-  try {
-    if (enteredPath.split(path.sep).length === 1) {
-      await fs.access(path.join(currentDir, enteredPath));
-      filePath = path.join(currentDir, enteredPath);
-    } else {
-      await fs.access(enteredPath);
-      filePath = path.join(enteredPath);
+export async function rn(path, newPath) {
+  if (path && newPath) {
+    if (
+      newPath.includes("/") ||
+      newPath.includes("\\") ||
+      newPath.includes(":") ||
+      newPath.includes("*") ||
+      newPath.includes("?") ||
+      newPath.includes("<") ||
+      newPath.includes(">") ||
+      newPath.includes("|") ||
+      newPath.includes('"')
+    ) {
+      console.log(errorMessage);
+      return;
     }
-    await fs.access(filePath, "..", newName);
-    throw new Error(errorMessage);
-  } catch (error) {
+    const oldFile = resolve(path);
+    const newFile = resolve(dirname(oldFile), newPath);
     try {
-      if (error.message === errorMessage) {
-        throw new Error(errorMessage);
-      }
-      await fs.rename(filePath, path.join(filePath, "..", newName));
-      console.log("Files had been renamed succesfully");
+      await createNewName(oldFile, newFile);
+      console.log(sucsessMessage);
+      getCurrentDir();
     } catch (error) {
       console.log(errorMessage);
     }
+  } else {
+    console.log(invalidInputMessage);
   }
 }

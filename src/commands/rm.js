@@ -1,18 +1,23 @@
-import fs from "fs";
-import path from "path";
-import { currentDir, errorMessage } from "../index.js";
+import { rm as remove } from "fs/promises";
+import { resolve } from "path";
+import {
+  errorMessage,
+  sucsessMessage,
+  invalidInputMessage,
+  getCurrentDir,
+} from "../index.js";
 
-export async function rm(command) {
-  try {
-    const enteredPath = command.split(" ")[1];
-    const filePath =
-      enteredPath.split(path.sep).length === 1
-        ? path.join(currentDir, enteredPath)
-        : path.join(enteredPath);
+export async function rm(path) {
+  if (path) {
+    try {
+      await remove(resolve(path));
 
-    await fs.promises.access(filePath);
-    fs.promises.unlink(filePath);
-  } catch (error) {
-    console.log(errorMessage);
+      console.log(sucsessMessage);
+      getCurrentDir();
+    } catch (error) {
+      console.log(errorMessage);
+    }
+  } else {
+    console.log(invalidInputMessage);
   }
 }

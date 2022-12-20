@@ -1,46 +1,28 @@
-import fs from "fs";
-import path from "path";
-import { currentDir, errorMessage } from "../index.js";
+import { resolve, parse } from "path";
+import { createReadStream, createWriteStream } from "fs";
+import { pipeline } from "stream/promises";
+import {
+  errorMessage,
+  invalidInputMessage,
+  getCurrentDir,
+} from "../index.js";
 
-export async function cp(command) {
-  if (command.split(" ").length < 3) {
-    console.log(errorMessage);
-  }
-
-  const enteredPath = command.split(" ")[1];
-  const enteredNewPath = command.split(" ")[2];
-
-  const filePath =
-    enteredPath.split(path.sep).length === 1
-      ? path.join(currentDir, enteredPath)
-      : path.join(enteredPath);
-
-  const folderPath =
-    enteredNewPath.split(path.sep).length === 1
-      ? path.join(currentDir, enteredNewPath)
-      : enteredNewPath;
-
-  const fullPath = path.join(folderPath, filePath.split(path.sep).slice(-1)[0]);
-
-  try {
-    await fs.promises.access(filePath);
-    await fs.promises.access(fullPath);
-
-    throw new Error("exist");
-  } catch (error) {
+export async function cp(path, newPath) {
+  if (path && newPath) {
+    const filePath = resolve(path);
+    const { base } = parse(filePath);
+    const targetFilePath = resolve(newPath, base);
     try {
-      if (error.message === "exist") {
-        throw new Error(errorMessage);
-      }
+      const readStream = createReadStream(filePath);
+      const writeStream = createWriteStream(targetFilePath);
 
-      await fs.promises.access(filePath);
-      fs.createReadStream(filePath)
-        .pipe(fs.createWriteStream(fullPath))
-        .on("error", () => {
-          console.log(errorMessage);
-        });
+      await pipeline(readStream, writeStream);
+      console.log(sucsessMessage);
+      getCurrentDir();
     } catch (error) {
       console.log(errorMessage);
     }
+  } else {
+    console.log(invalidInputMessage);
   }
 }
